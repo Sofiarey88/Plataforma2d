@@ -8,6 +8,7 @@ TagManager:
   - Choclo
   - Collectible
   - ' MovingPlatform'
+  - Trampa
   layers:
   - Default
   - TransparentFX
