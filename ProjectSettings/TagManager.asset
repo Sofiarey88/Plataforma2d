@@ -9,6 +9,7 @@ TagManager:
   - Collectible
   - ' MovingPlatform'
   - Trampa
+  - Enemy
   layers:
   - Default
   - TransparentFX
