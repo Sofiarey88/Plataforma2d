@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8665026778603671091}
   - component: {fileID: 7348240800843034998}
   - component: {fileID: 1775167052298970870}
-  - component: {fileID: 468050506774861649}
+  - component: {fileID: 686851995858070603}
   m_Layer: 0
   m_Name: Pincho (2)
   m_TagString: Trampa
@@ -139,7 +139,7 @@ PolygonCollider2D:
       - {x: -0.5, y: -0.28866667}
       - {x: 0.5, y: -0.28866667}
   m_UseDelaunayMesh: 0
---- !u!114 &468050506774861649
+--- !u!114 &686851995858070603
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -148,9 +148,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2570639986887429551}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d81b01f81adc04540a861088910f0b43, type: 3}
+  m_Script: {fileID: 11500000, guid: f086fe4a55040dd498ca55e43d9578c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  instantKill: 1
+  damage: 1
 --- !u!1 &7499753990763478405
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,7 +198,7 @@ GameObject:
   - component: {fileID: 8367922227871761610}
   - component: {fileID: 7517630520518810105}
   - component: {fileID: 3052773926898889251}
-  - component: {fileID: 7313327542494499142}
+  - component: {fileID: 3897708522214201076}
   m_Layer: 0
   m_Name: Pincho (1)
   m_TagString: Trampa
@@ -324,7 +326,7 @@ PolygonCollider2D:
       - {x: -0.5, y: -0.28866667}
       - {x: 0.5, y: -0.28866667}
   m_UseDelaunayMesh: 0
---- !u!114 &7313327542494499142
+--- !u!114 &3897708522214201076
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -333,9 +335,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8703638765142031073}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d81b01f81adc04540a861088910f0b43, type: 3}
+  m_Script: {fileID: 11500000, guid: f086fe4a55040dd498ca55e43d9578c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  instantKill: 1
+  damage: 1
 --- !u!1 &9136776095150881146
 GameObject:
   m_ObjectHideFlags: 0
@@ -347,7 +351,7 @@ GameObject:
   - component: {fileID: 2120897562436886605}
   - component: {fileID: 761447256388741247}
   - component: {fileID: 4229976613157761730}
-  - component: {fileID: 3275986957756947254}
+  - component: {fileID: 1131775324873585923}
   m_Layer: 0
   m_Name: Pincho
   m_TagString: Trampa
@@ -475,7 +479,7 @@ PolygonCollider2D:
       - {x: -0.5, y: -0.28866667}
       - {x: 0.5, y: -0.28866667}
   m_UseDelaunayMesh: 0
---- !u!114 &3275986957756947254
+--- !u!114 &1131775324873585923
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -484,6 +488,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 9136776095150881146}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d81b01f81adc04540a861088910f0b43, type: 3}
+  m_Script: {fileID: 11500000, guid: f086fe4a55040dd498ca55e43d9578c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  instantKill: 1
+  damage: 1

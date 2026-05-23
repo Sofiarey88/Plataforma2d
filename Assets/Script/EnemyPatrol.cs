@@ -1,26 +1,19 @@
 using UnityEngine;
 
 /// <summary>
-/// Enemigo que patrulla entre dos puntos (izquierda y derecha).
+/// Enemigo que patrulla entre dos puntos horizontales.
 /// </summary>
-public class EnemyPatrol : EnemyBase
+public class EnemyPatrol : Enemy
 {
     [Header("Patrulla")]
     public float patrolDistance = 3f;
 
-    // Posición de inicio se actualiza en FixedUpdate para tolerar plataformas móviles
     private Vector2 originPosition;
     private bool originSet = false;
     private int direction = 1;
 
-    protected override void Start()
+    public override void Move()
     {
-        base.Start();
-    }
-
-    protected override void Move()
-    {
-        // Guardamos el origen la primera vez que el enemigo está apoyado en algo
         if (!originSet)
         {
             originPosition = rb.position;

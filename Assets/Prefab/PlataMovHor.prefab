@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 6240346827540603114}
   - component: {fileID: 3021407449308065405}
+  - component: {fileID: 7854905126370363571}
   - component: {fileID: 3348153644294386004}
   m_Layer: 0
-  m_Name: PlatafomrMov
+  m_Name: PlataMovHor
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -88,6 +89,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &7854905126370363571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3957717709363701327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb867d09a635cb54a84200eac8a56daa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 2
+  distance: 3
+  useLocalPosition: 0
+  useRigidbody2D: 1
 --- !u!61 &3348153644294386004
 BoxCollider2D:
   m_ObjectHideFlags: 0

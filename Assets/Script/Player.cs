@@ -1,34 +1,35 @@
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+/// <summary>
+/// Controla al jugador: movimiento, salto, plataformas móviles y recepción de daño.
+/// Reemplaza a PlayerController + PlayerHealth.
+/// </summary>
+public class Player : Personaje, IMovable
 {
-    private Rigidbody2D rb;
-
+    [Header("Movimiento")]
     public float speed = 5f;
     public float jumpForce = 10f;
-
-    // Si es true, las plataformas con tag "MovingPlatform" contarán como suelo para saltar.
     public bool movingPlatformCountsAsGround = true;
 
-    private float move;
+    private Rigidbody2D rb;
+    private float moveInput;
     private bool isGrounded;
+    private bool justJumped;
 
-    // Plataforma sobre la que estamos (si hay)
+    // Plataforma móvil
     private Transform platformTransform;
     private Vector2 relativePos;
     private bool onMovingPlatform;
 
-    // Evita que FixedUpdate anule el salto inmediatamente
-    private bool justJumped = false;
-
-    void Start()
+    protected override void Start()
     {
+        base.Start(); // inicializa currentHealth
         rb = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
-        move = Input.GetAxisRaw("Horizontal");
+        moveInput = Input.GetAxisRaw("Horizontal");
 
         bool canJump = isGrounded || (movingPlatformCountsAsGround && onMovingPlatform);
         if (Input.GetKeyDown(KeyCode.Space) && canJump)
@@ -42,24 +43,37 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        Move();
+    }
+
+    // --- IMovable ---
+    public void Move()
+    {
         if (justJumped)
         {
-            rb.linearVelocity = new Vector2(move * speed, rb.linearVelocity.y);
+            rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
             justJumped = false;
             return;
         }
 
         if (onMovingPlatform && platformTransform != null && (isGrounded || movingPlatformCountsAsGround))
         {
-            relativePos.x += move * speed * Time.fixedDeltaTime;
+            relativePos.x += moveInput * speed * Time.fixedDeltaTime;
             float targetX = platformTransform.position.x + relativePos.x;
-            Vector2 targetPos = new Vector2(targetX, rb.position.y);
-            rb.MovePosition(targetPos);
+            rb.MovePosition(new Vector2(targetX, rb.position.y));
             return;
         }
 
-        rb.linearVelocity = new Vector2(move * speed, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
     }
+
+    protected override void Die()
+    {
+        Debug.Log("El jugador ha muerto.");
+        Destroy(gameObject);
+    }
+
+    // ── Colisiones ──────────────────────────────────────────
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -67,18 +81,16 @@ public class PlayerController : MonoBehaviour
         {
             if (contact.normal.y > 0.5f)
             {
-                // Solo marcamos isGrounded si la tag es Ground
                 if (collision.gameObject.CompareTag("Ground"))
                     isGrounded = true;
 
-                // Detectamos plataforma móvil por tag o por componente (no la convertimos en Ground a menos que la opción esté activada)
-                if (collision.gameObject.CompareTag("MovingPlatform") || collision.gameObject.GetComponent<PlataformMov>() != null)
+                if (collision.gameObject.CompareTag("MovingPlatform") ||
+                    collision.gameObject.GetComponent<PlataformaMovilHorizontal>() != null)
                 {
                     platformTransform = collision.transform;
                     relativePos = (Vector2)transform.position - (Vector2)platformTransform.position;
                     onMovingPlatform = true;
                 }
-
                 break;
             }
         }
@@ -93,7 +105,8 @@ public class PlayerController : MonoBehaviour
                 if (collision.gameObject.CompareTag("Ground"))
                     isGrounded = true;
 
-                if (!onMovingPlatform && (collision.gameObject.CompareTag("MovingPlatform") || collision.gameObject.GetComponent<PlataformMov>() != null))
+                if (!onMovingPlatform && (collision.gameObject.CompareTag("MovingPlatform") ||
+                    collision.gameObject.GetComponent<PlataformaMovilHorizontal>() != null))
                 {
                     platformTransform = collision.transform;
                     relativePos = (Vector2)transform.position - (Vector2)platformTransform.position;
@@ -106,17 +119,15 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (platformTransform == collision.transform &&
-            (collision.gameObject.CompareTag("MovingPlatform") || collision.gameObject.GetComponent<PlataformMov>() != null))
-        {
-            platformTransform = null;
-            onMovingPlatform = false;
-        }
-
         if (collision.gameObject.CompareTag("Ground"))
             isGrounded = false;
 
-        if (collision.gameObject.CompareTag("MovingPlatform") || collision.gameObject.GetComponent<PlataformMov>() != null)
+        if (collision.gameObject.CompareTag("MovingPlatform") ||
+            collision.gameObject.GetComponent<PlataformaMovilHorizontal>() != null)
+        {
             onMovingPlatform = false;
+            if (platformTransform == collision.transform)
+                platformTransform = null;
+        }
     }
 }
