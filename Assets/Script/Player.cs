@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
     public float speed = 5f;
     public float jumpForce = 8f;
 
@@ -12,63 +11,84 @@ public class Player : MonoBehaviour
     private bool isGrounded;
     private Vector3 escalaOriginal;
 
+    // entradas y flags para FixedUpdate
+    private float moveInput;
+    private bool jumpPressed;
+
+    [Tooltip("Parámetro float del Animator que recibe la velocidad horizontal")]
+    public string moveParam = "MotMen";
+
+    [Tooltip("Multiplicador aplicado a la velocidad X antes de enviarla al Animator")]
+    public float moveMultiplier = 1f;
+
+    [Tooltip("Umbral para considerar que el jugador se está moviendo")]
+    public float moveThreshold = 0.1f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-
-        // Guardamos la escala original
         escalaOriginal = transform.localScale;
     }
 
     void Update()
     {
-        float move = Input.GetAxisRaw("Horizontal");
+        // Leer entrada (sin aplicar física)
+        moveInput = Input.GetAxisRaw("Horizontal");
 
-        // Movimiento horizontal
-        rb.linearVelocity = new Vector2(move * speed, rb.linearVelocity.y);
+        // Girar personaje sin cambiar tamaño
+        if (moveInput > 0f)
+            transform.localScale = new Vector3(Mathf.Abs(escalaOriginal.x), escalaOriginal.y, escalaOriginal.z);
+        else if (moveInput < 0f)
+            transform.localScale = new Vector3(-Mathf.Abs(escalaOriginal.x), escalaOriginal.y, escalaOriginal.z);
 
-        // Girar personaje sin cambiar tama�o
-        if (move > 0)
-        {
-            transform.localScale = new Vector3(
-                Mathf.Abs(escalaOriginal.x),
-                escalaOriginal.y,
-                escalaOriginal.z);
-        }
-        else if (move < 0)
-        {
-            transform.localScale = new Vector3(
-                -Mathf.Abs(escalaOriginal.x),
-                escalaOriginal.y,
-                escalaOriginal.z);
-        }
-
-        // Salto
+        // Detectar salto (marcar para FixedUpdate)
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+            jumpPressed = true;
+
+        // Actualizar parámetros del Animator
+        if (anim != null)
+        {
+            float horVel = rb != null ? Mathf.Abs(rb.linearVelocity.x) : Mathf.Abs(moveInput * speed);
+            anim.SetFloat(moveParam, horVel * moveMultiplier); // envío MotMen = |velX| * multiplicador
+            anim.SetFloat("YVelocity", rb != null ? rb.linearVelocity.y : 0f);
+            anim.SetBool("IsMoving", horVel > moveThreshold);
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (rb == null) return;
+
+        // Movimiento horizontal físico
+        rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
+
+        // Aplicar salto cuando se solicitó
+        if (jumpPressed)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            jumpPressed = false;
+            isGrounded = false;
         }
-
-        // Animaciones
-        anim.SetFloat("Speed", Mathf.Abs(move));
-        anim.SetFloat("YVelocity", rb.linearVelocity.y);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        foreach (ContactPoint2D contact in collision.contacts)
         {
-            isGrounded = true;
+            if (contact.normal.y > 0.5f &&
+                (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("MovingPlatform")))
+            {
+                isGrounded = true;
+                break;
+            }
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("MovingPlatform"))
             isGrounded = false;
-        }
     }
 }
 
