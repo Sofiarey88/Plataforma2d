@@ -18,6 +18,12 @@ public class Player : MonoBehaviour
     [Tooltip("Parámetro float del Animator que recibe la velocidad horizontal")]
     public string moveParam = "MotMen";
 
+    [Tooltip("Trigger del Animator que activa la animación de salto")]
+    public string jumpTrigger = "Jump";
+
+    [Tooltip("Bool del Animator que indica que estamos en suelo (usar en transiciones de regreso)")]
+    public string groundedParam = "Suelo";
+
     [Tooltip("Multiplicador aplicado a la velocidad X antes de enviarla al Animator")]
     public float moveMultiplier = 1f;
 
@@ -33,26 +39,24 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        // Leer entrada (sin aplicar física)
         moveInput = Input.GetAxisRaw("Horizontal");
 
-        // Girar personaje sin cambiar tamaño
         if (moveInput > 0f)
             transform.localScale = new Vector3(Mathf.Abs(escalaOriginal.x), escalaOriginal.y, escalaOriginal.z);
         else if (moveInput < 0f)
             transform.localScale = new Vector3(-Mathf.Abs(escalaOriginal.x), escalaOriginal.y, escalaOriginal.z);
 
-        // Detectar salto (marcar para FixedUpdate)
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
             jumpPressed = true;
 
-        // Actualizar parámetros del Animator
         if (anim != null)
         {
             float horVel = rb != null ? Mathf.Abs(rb.linearVelocity.x) : Mathf.Abs(moveInput * speed);
-            anim.SetFloat(moveParam, horVel * moveMultiplier); // envío MotMen = |velX| * multiplicador
+            anim.SetFloat(moveParam, horVel * moveMultiplier);
             anim.SetFloat("YVelocity", rb != null ? rb.linearVelocity.y : 0f);
             anim.SetBool("IsMoving", horVel > moveThreshold);
+            // mantener parámetro Suelo acorde al estado físico
+            anim.SetBool(groundedParam, isGrounded);
         }
     }
 
@@ -60,15 +64,19 @@ public class Player : MonoBehaviour
     {
         if (rb == null) return;
 
-        // Movimiento horizontal físico
         rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
 
-        // Aplicar salto cuando se solicitó
         if (jumpPressed)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             jumpPressed = false;
             isGrounded = false;
+            // activar trigger de salto y actualizar Suelo=false
+            if (anim != null)
+            {
+                anim.SetTrigger(jumpTrigger);
+                anim.SetBool(groundedParam, false);
+            }
         }
     }
 
@@ -80,6 +88,7 @@ public class Player : MonoBehaviour
                 (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("MovingPlatform")))
             {
                 isGrounded = true;
+                if (anim != null) anim.SetBool(groundedParam, true);
                 break;
             }
         }
@@ -88,7 +97,10 @@ public class Player : MonoBehaviour
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("MovingPlatform"))
+        {
             isGrounded = false;
+            if (anim != null) anim.SetBool(groundedParam, false);
+        }
     }
 }
 
