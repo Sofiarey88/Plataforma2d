@@ -2,7 +2,6 @@ using UnityEngine;
 
 /// <summary>
 /// Controla al jugador: movimiento, salto, plataformas móviles y recepción de daño.
-/// Reemplaza a PlayerController + PlayerHealth.
 /// </summary>
 public class Player : Personaje, IMovable
 {
@@ -11,7 +10,11 @@ public class Player : Personaje, IMovable
     public float jumpForce = 10f;
     public bool movingPlatformCountsAsGround = true;
 
+    [Header("Stomp")]
+    public float stompBounceForce = 8f;
+
     private Rigidbody2D rb;
+    private Animator animator;
     private float moveInput;
     private bool isGrounded;
     private bool justJumped;
@@ -21,10 +24,18 @@ public class Player : Personaje, IMovable
     private Vector2 relativePos;
     private bool onMovingPlatform;
 
+    /// <summary>
+    /// Velocidad capturada al inicio de FixedUpdate, ANTES de que el motor físico
+    /// resuelva colisiones. Usada por StompTrigger para saber si el player caía
+    /// en el momento exacto del impacto, independientemente de lo que resuelva la física.
+    /// </summary>
+    public Vector2 VelocityBeforePhysics { get; private set; }
+
     protected override void Start()
     {
-        base.Start(); // inicializa currentHealth
+        base.Start();
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -43,6 +54,11 @@ public class Player : Personaje, IMovable
 
     void FixedUpdate()
     {
+        // ⚠️ Capturar ANTES de Move() y ANTES de que la física resuelva este frame.
+        // OnTriggerEnter2D dispara después del paso físico, cuando rb.linearVelocity
+        // ya fue modificado por colisiones. Este snapshot preserva la velocidad real
+        // con la que el player llegó al contacto.
+        VelocityBeforePhysics = rb.linearVelocity;
         Move();
     }
 
@@ -65,6 +81,22 @@ public class Player : Personaje, IMovable
         }
 
         rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
+    }
+
+    /// <summary>
+    /// Aplica el impulso de rebote hacia arriba tras un pisotón exitoso.
+    /// Llamado por StompTrigger.
+    /// </summary>
+    public void ApplyStompBounce()
+    {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, stompBounceForce);
+        animator?.SetTrigger("Stomp");
+    }
+
+    // --- Hooks de Personaje ---
+    protected override void OnDamaged()
+    {
+        animator?.SetTrigger("Hurt");
     }
 
     protected override void Die()
