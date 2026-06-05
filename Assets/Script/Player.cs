@@ -1,165 +1,106 @@
 using UnityEngine;
 
-/// <summary>
-/// Controla al jugador: movimiento, salto, plataformas móviles y recepción de daño.
-/// </summary>
-public class Player : Personaje, IMovable
+public class Player : MonoBehaviour
 {
-    [Header("Movimiento")]
     public float speed = 5f;
-    public float jumpForce = 10f;
-    public bool movingPlatformCountsAsGround = true;
-
-    [Header("Stomp")]
-    public float stompBounceForce = 8f;
+    public float jumpForce = 8f;
 
     private Rigidbody2D rb;
-    private Animator animator;
-    private float moveInput;
+    private Animator anim;
+
     private bool isGrounded;
-    private bool justJumped;
+    private Vector3 escalaOriginal;
 
-    // Plataforma móvil
-    private Transform platformTransform;
-    private Vector2 relativePos;
-    private bool onMovingPlatform;
+    // entradas y flags para FixedUpdate
+    private float moveInput;
+    private bool jumpPressed;
 
-    /// <summary>
-    /// Velocidad capturada al inicio de FixedUpdate, ANTES de que el motor físico
-    /// resuelva colisiones. Usada por StompTrigger para saber si el player caía
-    /// en el momento exacto del impacto, independientemente de lo que resuelva la física.
-    /// </summary>
-    public Vector2 VelocityBeforePhysics { get; private set; }
+    [Tooltip("Parámetro float del Animator que recibe la velocidad horizontal")]
+    public string moveParam = "MotMen";
 
-    protected override void Start()
+    [Tooltip("Trigger del Animator que activa la animación de salto")]
+    public string jumpTrigger = "Jump";
+
+    [Tooltip("Bool del Animator que indica que estamos en suelo (usar en transiciones de regreso)")]
+    public string groundedParam = "Suelo";
+
+    [Tooltip("Multiplicador aplicado a la velocidad X antes de enviarla al Animator")]
+    public float moveMultiplier = 1f;
+
+    [Tooltip("Umbral para considerar que el jugador se está moviendo")]
+    public float moveThreshold = 0.1f;
+
+    void Start()
     {
-        base.Start();
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+        anim = GetComponent<Animator>();
+        escalaOriginal = transform.localScale;
     }
 
     void Update()
     {
         moveInput = Input.GetAxisRaw("Horizontal");
 
-        bool canJump = isGrounded || (movingPlatformCountsAsGround && onMovingPlatform);
-        if (Input.GetKeyDown(KeyCode.Space) && canJump)
+        if (moveInput > 0f)
+            transform.localScale = new Vector3(Mathf.Abs(escalaOriginal.x), escalaOriginal.y, escalaOriginal.z);
+        else if (moveInput < 0f)
+            transform.localScale = new Vector3(-Mathf.Abs(escalaOriginal.x), escalaOriginal.y, escalaOriginal.z);
+
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+            jumpPressed = true;
+
+        if (anim != null)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-            isGrounded = false;
-            onMovingPlatform = false;
-            justJumped = true;
+            float horVel = rb != null ? Mathf.Abs(rb.linearVelocity.x) : Mathf.Abs(moveInput * speed);
+            anim.SetFloat(moveParam, horVel * moveMultiplier);
+            anim.SetFloat("YVelocity", rb != null ? rb.linearVelocity.y : 0f);
+            anim.SetBool("IsMoving", horVel > moveThreshold);
+            // mantener parámetro Suelo acorde al estado físico
+            anim.SetBool(groundedParam, isGrounded);
         }
     }
 
     void FixedUpdate()
     {
-        // ⚠️ Capturar ANTES de Move() y ANTES de que la física resuelva este frame.
-        // OnTriggerEnter2D dispara después del paso físico, cuando rb.linearVelocity
-        // ya fue modificado por colisiones. Este snapshot preserva la velocidad real
-        // con la que el player llegó al contacto.
-        VelocityBeforePhysics = rb.linearVelocity;
-        Move();
-    }
-
-    // --- IMovable ---
-    public void Move()
-    {
-        if (justJumped)
-        {
-            rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
-            justJumped = false;
-            return;
-        }
-
-        if (onMovingPlatform && platformTransform != null && (isGrounded || movingPlatformCountsAsGround))
-        {
-            relativePos.x += moveInput * speed * Time.fixedDeltaTime;
-            float targetX = platformTransform.position.x + relativePos.x;
-            rb.MovePosition(new Vector2(targetX, rb.position.y));
-            return;
-        }
+        if (rb == null) return;
 
         rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
-    }
 
-    /// <summary>
-    /// Aplica el impulso de rebote hacia arriba tras un pisotón exitoso.
-    /// Llamado por StompTrigger.
-    /// </summary>
-    public void ApplyStompBounce()
-    {
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, stompBounceForce);
-        animator?.SetTrigger("Stomp");
+        if (jumpPressed)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            jumpPressed = false;
+            isGrounded = false;
+            // activar trigger de salto y actualizar Suelo=false
+            if (anim != null)
+            {
+                anim.SetTrigger(jumpTrigger);
+                anim.SetBool(groundedParam, false);
+            }
+        }
     }
-
-    // --- Hooks de Personaje ---
-    protected override void OnDamaged()
-    {
-        animator?.SetTrigger("Hurt");
-    }
-
-    protected override void Die()
-    {
-        Debug.Log("El jugador ha muerto.");
-        Destroy(gameObject);
-    }
-
-    // ── Colisiones ──────────────────────────────────────────
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         foreach (ContactPoint2D contact in collision.contacts)
         {
-            if (contact.normal.y > 0.5f)
+            if (contact.normal.y > 0.5f &&
+                (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("MovingPlatform")))
             {
-                if (collision.gameObject.CompareTag("Ground"))
-                    isGrounded = true;
-
-                if (collision.gameObject.CompareTag("MovingPlatform") ||
-                    collision.gameObject.GetComponent<PlataformaMovilHorizontal>() != null)
-                {
-                    platformTransform = collision.transform;
-                    relativePos = (Vector2)transform.position - (Vector2)platformTransform.position;
-                    onMovingPlatform = true;
-                }
+                isGrounded = true;
+                if (anim != null) anim.SetBool(groundedParam, true);
                 break;
-            }
-        }
-    }
-
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        foreach (ContactPoint2D contact in collision.contacts)
-        {
-            if (contact.normal.y > 0.5f)
-            {
-                if (collision.gameObject.CompareTag("Ground"))
-                    isGrounded = true;
-
-                if (!onMovingPlatform && (collision.gameObject.CompareTag("MovingPlatform") ||
-                    collision.gameObject.GetComponent<PlataformaMovilHorizontal>() != null))
-                {
-                    platformTransform = collision.transform;
-                    relativePos = (Vector2)transform.position - (Vector2)platformTransform.position;
-                    onMovingPlatform = true;
-                }
-                return;
             }
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
-            isGrounded = false;
-
-        if (collision.gameObject.CompareTag("MovingPlatform") ||
-            collision.gameObject.GetComponent<PlataformaMovilHorizontal>() != null)
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("MovingPlatform"))
         {
-            onMovingPlatform = false;
-            if (platformTransform == collision.transform)
-                platformTransform = null;
+            isGrounded = false;
+            if (anim != null) anim.SetBool(groundedParam, false);
         }
     }
 }
+
