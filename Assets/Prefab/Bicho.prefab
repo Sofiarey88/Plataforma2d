@@ -12,11 +12,11 @@ GameObject:
   - component: {fileID: 8503267444022141838}
   - component: {fileID: 7472017461151459437}
   - component: {fileID: 2624959900331586831}
-  - component: {fileID: 4662109587464952323}
   - component: {fileID: 4735092208537696434}
+  - component: {fileID: 8671571745466561301}
   m_Layer: 0
   m_Name: Bicho
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -140,23 +140,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &4662109587464952323
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7594889700253783162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab92ce5bcb1542b4db7a5a822d2c4744, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  idleDuration: 2
-  detectionRadius: 4
-  playerTag: Player
-  chaseSpeed: 3
-  runParam: enMovim
 --- !u!61 &4735092208537696434
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -203,3 +186,19 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.89693093, y: 1.0344735}
   m_EdgeRadius: 0
+--- !u!114 &8671571745466561301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7594889700253783162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b5a40b2261259246bc91beacbbd1c65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 3
+  moveSpeed: 2
+  damageToPlayer: 1
+  patrolDistance: 3
