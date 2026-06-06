@@ -3,8 +3,17 @@ using UnityEngine;
 public abstract class Enemy : Personaje, IMovable, IStompable
 {
     [Header("Movimiento")]
-    public float moveSpeed     = 2f;
+    public float moveSpeed      = 2f;
     public int   damageToPlayer = 1;
+
+    [Header("Stomp")]
+    [Tooltip("Daño que recibe este enemigo por cada pisotón.\n" +
+             "999 = muerte instantánea (comportamiento por defecto).\n" +
+             "Para enemigos de varios pisotones: igualar a 1 y subir maxHealth.")]
+    [SerializeField] private int stompDamage = 999;
+
+    [Tooltip("Trigger del Animator al recibir un pisotón no letal. Dejar vacío para no disparar nada.")]
+    [SerializeField] private string stompHitTrigger = "Hurt";
 
     protected Rigidbody2D rb;
     protected Animator    animator;
@@ -16,26 +25,44 @@ public abstract class Enemy : Personaje, IMovable, IStompable
         animator = GetComponent<Animator>();
     }
 
-    protected override void Start()      => base.Start();
+    protected override void Start()       => base.Start();
     protected virtual  void FixedUpdate() => Move();
 
     // --- IMovable ---
     public abstract void Move();
 
     // --- IStompable ---
+    /// <summary>
+    /// Aplica stompDamage por cada pisotón.
+    /// - stompDamage >= currentHealth → muerte inmediata (TriggerDeathSequence)
+    /// - stompDamage < currentHealth  → pierde vida, flash, sigue vivo
+    /// El comportamiento por defecto (stompDamage = 999) conserva la muerte instantánea.
+    /// </summary>
     public virtual void OnStomp()
     {
         if (!IsAlive) return;
-        currentHealth = 0;
-        TriggerDeathSequence();
+
+        currentHealth = Mathf.Max(0, currentHealth - stompDamage);
+
+        if (!IsAlive)
+        {
+            // Pisotón letal → secuencia de muerte con flash
+            TriggerDeathSequence();
+        }
+        else
+        {
+            // Pisotón no letal → feedback visual sin morir
+            if (damageFlash != null)
+                StartCoroutine(damageFlash.Flash());
+
+            if (!string.IsNullOrEmpty(stompHitTrigger))
+                animator?.SetTrigger(stompHitTrigger);
+        }
     }
 
     // --- Hooks de Personaje ---
 
-    protected override void OnDamaged()
-    {
-        animator?.SetTrigger("Hurt");
-    }
+    protected override void OnDamaged()  => animator?.SetTrigger("Hurt");
 
     protected override void OnPreDeath()
     {

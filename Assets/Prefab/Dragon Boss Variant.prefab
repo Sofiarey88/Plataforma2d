@@ -100,8 +100,42 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 3
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1228090967414229121, guid: 6cdf9ad59c4808d458a8e29af0ce6af7, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8009445893397405600, guid: 6cdf9ad59c4808d458a8e29af0ce6af7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6839252304778730177}
   m_SourcePrefab: {fileID: 100100000, guid: 6cdf9ad59c4808d458a8e29af0ce6af7, type: 3}
+--- !u!1 &1443967155400271054 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8009445893397405600, guid: 6cdf9ad59c4808d458a8e29af0ce6af7, type: 3}
+  m_PrefabInstance: {fileID: 8875826172154297198}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6839252304778730177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1443967155400271054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46fcb96422bc8b24b85de7e904613bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 2
+  moveSpeed: 2
+  damageToPlayer: 1
+  stompDamage: 1
+  stompHitTrigger: Hurt
+  bulletPrefab: {fileID: 6627251467851497909, guid: 52b04499264be714c8d204de721b3749, type: 3}
+  firePoint: {fileID: 3852790055565863182}
+  fireRate: 1
+--- !u!4 &3852790055565863182 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5645993050971181664, guid: 6cdf9ad59c4808d458a8e29af0ce6af7, type: 3}
+  m_PrefabInstance: {fileID: 8875826172154297198}
+  m_PrefabAsset: {fileID: 0}

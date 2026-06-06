@@ -1,0 +1,85 @@
+using UnityEngine;
+
+/// <summary>
+/// Enemigo estático que dispara proyectiles y requiere dos pisotones para morir.
+/// Hermano de EnemyShooter: ambos son hijos directos de Enemy.
+///
+/// Diferencia con EnemyShooter:
+///   Sobreescribe OnCollisionEnter2D para ignorar el contacto cuando
+///   el player viene desde arriba, evitando que el player reciba daño
+///   al pisarlo (ese contacto ya lo gestiona StompTrigger → OnStomp).
+///
+/// Setup en Inspector:
+///   Personaje → Max Health   = 2
+///   Enemy     → Stomp Damage = 1
+/// </summary>
+public class EnemyShooterBoss : Enemy
+{
+    [Header("Disparo")]
+    public GameObject bulletPrefab;
+    public Transform  firePoint;
+    public float      fireRate = 1f;
+
+    private float nextFireTime;
+
+    public override void Move() { }
+
+    private void Update()
+    {
+        if (Time.time >= nextFireTime)
+        {
+            Shoot();
+            nextFireTime = Time.time + fireRate;
+        }
+    }
+
+    private void Shoot()
+    {
+        if (bulletPrefab == null || firePoint == null)
+        {
+            Debug.LogWarning($"[EnemyShooterBoss] bulletPrefab o firePoint no asignados en '{gameObject.name}'.");
+            return;
+        }
+
+        Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+    }
+
+    /// <summary>
+    /// Ignora el contacto cuando proviene desde arriba (pisotón).
+    /// La normal en el callback del Enemy apunta del Player hacia el Boss;
+    /// si y menor a -0.5f el Player está cayendo encima → StompTrigger ya
+    /// gestionó ese evento, no debe aplicarse daño ni knockback al player.
+    /// Contacto lateral o inferior → comportamiento idéntico al Enemy base.
+    /// </summary>
+    protected override void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!collision.gameObject.CompareTag("Player")) return;
+        if (!IsAlive) return;
+
+        foreach (ContactPoint2D contact in collision.contacts)
+            if (contact.normal.y < -0.5f) return;
+
+        IDamageable player = collision.gameObject.GetComponent<IDamageable>();
+        player?.TakeDamage(damageToPlayer, transform.position);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (firePoint == null) return;
+
+        const float lineLength = 1.5f;
+        const float arrowSize  = 0.2f;
+
+        Vector3 origin    = firePoint.position;
+        Vector3 direction = firePoint.right;
+        Vector3 tip       = origin + direction * lineLength;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(origin, tip);
+        Gizmos.DrawLine(tip, tip - Quaternion.Euler(0, 0,  25f) * direction * arrowSize);
+        Gizmos.DrawLine(tip, tip - Quaternion.Euler(0, 0, -25f) * direction * arrowSize);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(origin, 0.08f);
+    }
+}
