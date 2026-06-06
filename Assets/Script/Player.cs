@@ -24,6 +24,10 @@ public class Player : Personaje, IMovable
     [Tooltip("Segundos sin control horizontal tras recibir daño")]
     [SerializeField] private float knockbackControlLock = 0.2f;
 
+    [Header("Bullet Time")]
+    [Tooltip("Multiplicador de gravedad EXTRA durante el bullet time (1 = solo compensa el timeScale, >1 = más pesado)")]
+    [SerializeField] private float bulletTimeGravityMultiplier = 2f;
+
     [Header("Animación")]
     [Tooltip("Parámetro float del Animator que recibe la velocidad horizontal")]
     public string moveParam    = "MotMen";
@@ -47,27 +51,23 @@ public class Player : Personaje, IMovable
 
     private float moveInput;
     private bool  jumpPressed;
+    private bool  isKnockedBack;
+    private float originalGravityScale;
 
-    /// <summary>
-    /// True mientras dure el knockback: bloquea el override de velocidad X en Move()
-    /// para que el impulso no sea cancelado inmediatamente por el input del jugador.
-    /// </summary>
-    private bool isKnockedBack;
-
-    /// <summary>
-    /// Velocidad capturada al inicio de FixedUpdate, antes de que la física resuelva
-    /// colisiones. Usada por StompTrigger para confirmar que el player caía.
-    /// </summary>
     public Vector2 VelocityBeforePhysics { get; private set; }
+
+    private bool bulletTimeActive;
+    private Coroutine bulletTimeCoroutine;
 
     // ── Ciclo de vida ────────────────────────────────────────
 
     protected override void Start()
     {
         base.Start();
-        rb             = GetComponent<Rigidbody2D>();
-        anim           = GetComponent<Animator>();
-        escalaOriginal = transform.localScale;
+        rb                  = GetComponent<Rigidbody2D>();
+        anim                = GetComponent<Animator>();
+        escalaOriginal      = transform.localScale;
+        originalGravityScale = rb != null ? rb.gravityScale : 1f;
     }
 
     private void Update()
@@ -96,14 +96,20 @@ public class Player : Personaje, IMovable
 
     public void Move()
     {
-        // Durante el knockback no sobreescribimos la velocidad X:
-        // el impulso tiene que poder expresarse sin que el input lo cancele
+        float compensatedSpeed = bulletTimeActive ? speed / Time.timeScale : speed;
+
+        // Compensación correcta: iguala la altura de salto teniendo en cuenta
+        // que gravityScale ya fue aumentado. sqrt mantiene h = v²/(2g) constante.
+        float compensatedJumpForce = bulletTimeActive
+            ? jumpForce * Mathf.Sqrt(rb.gravityScale / originalGravityScale)
+            : jumpForce;
+
         if (!isKnockedBack)
-            rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
+            rb.linearVelocity = new Vector2(moveInput * compensatedSpeed, rb.linearVelocity.y);
 
         if (jumpPressed)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, compensatedJumpForce);
             jumpPressed = false;
             isGrounded  = false;
             anim?.SetTrigger(jumpTrigger);
@@ -127,31 +133,20 @@ public class Player : Personaje, IMovable
         anim?.SetTrigger("Hurt");
     }
 
-    /// <summary>
-    /// Calcula la dirección del empujón (away from source) y aplica el impulso.
-    /// Bloquea el control horizontal durante knockbackControlLock segundos.
-    /// </summary>
     protected override void OnKnockback(Vector2 sourcePosition)
     {
         if (rb == null) return;
-
-        // Si sourcePosition es default (nadie pasó coordenadas), no aplicar knockback
         if (sourcePosition == default) return;
 
-        // Dirección horizontal: empujar AWAY del origen del daño
         Vector2 toPlayer = (Vector2)transform.position - sourcePosition;
         float xDir = toPlayer.sqrMagnitude > 0.001f
             ? Mathf.Sign(toPlayer.x)
-            : (transform.localScale.x >= 0 ? -1f : 1f); // fallback: hacia atrás
+            : (transform.localScale.x >= 0 ? -1f : 1f);
 
         rb.linearVelocity = new Vector2(xDir * knockbackForce, knockbackUpForce);
-
         StartCoroutine(KnockbackLock());
     }
 
-    /// <summary>
-    /// Bloquea el override de movimiento horizontal durante knockbackControlLock segundos.
-    /// </summary>
     private IEnumerator KnockbackLock()
     {
         isKnockedBack = true;
@@ -175,9 +170,9 @@ public class Player : Personaje, IMovable
             ? Mathf.Abs(rb.linearVelocity.x)
             : Mathf.Abs(moveInput * speed);
 
-        anim.SetFloat(moveParam,    horVel * moveMultiplier);
-        anim.SetFloat("YVelocity", rb != null ? rb.linearVelocity.y : 0f);
-        anim.SetBool("IsMoving",   horVel > moveThreshold);
+        anim.SetFloat(moveParam,     horVel * moveMultiplier);
+        anim.SetFloat("YVelocity",  rb != null ? rb.linearVelocity.y : 0f);
+        anim.SetBool("IsMoving",    horVel > moveThreshold);
         anim.SetBool(groundedParam, isGrounded);
     }
 
@@ -206,6 +201,42 @@ public class Player : Personaje, IMovable
             isGrounded = false;
             anim?.SetBool(groundedParam, false);
         }
+    }
+
+    // ── Bullet Time ──────────────────────────────────────────
+
+    public void StartBulletTime(float slowFactor, float duration)
+    {
+        if (bulletTimeCoroutine != null)
+            StopCoroutine(bulletTimeCoroutine);
+
+        bulletTimeCoroutine = StartCoroutine(BulletTimeCoroutine(slowFactor, duration));
+    }
+
+    private IEnumerator BulletTimeCoroutine(float slowFactor, float duration)
+    {
+        slowFactor = Mathf.Clamp(slowFactor, 0.05f, 0.99f);
+
+        Time.timeScale       = slowFactor;
+        Time.fixedDeltaTime  = 0.02f * slowFactor;
+        bulletTimeActive     = true;
+
+        // (1 / timeScale) compensa la pérdida de gravedad real causada por el timeScale reducido.
+        // bulletTimeGravityMultiplier añade peso extra encima de esa compensación.
+        if (rb != null)
+            rb.gravityScale = originalGravityScale * (1f / slowFactor) * bulletTimeGravityMultiplier;
+
+        yield return new WaitForSecondsRealtime(duration);
+
+        // Restaurar todo al terminar
+        Time.timeScale      = 1f;
+        Time.fixedDeltaTime = 0.02f;
+        bulletTimeActive    = false;
+
+        if (rb != null)
+            rb.gravityScale = originalGravityScale;
+
+        bulletTimeCoroutine = null;
     }
 }
 
