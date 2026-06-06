@@ -1,24 +1,35 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Controla al jugador: movimiento, salto, animaciones y recepción de daño.
-/// Hereda vida e IDamageable de Personaje. Implementa IMovable para el sistema de movimiento.
+/// Controla al jugador: movimiento, salto, animaciones, knockback e invencibilidad.
+/// Hereda vida e IDamageable de Personaje. Implementa IMovable.
 /// </summary>
 public class Player : Personaje, IMovable
 {
     [Header("Movimiento")]
-    public float speed = 5f;
-    public float jumpForce = 8f;
+    public float speed      = 5f;
+    public float jumpForce  = 8f;
 
     [Header("Stomp")]
     public float stompBounceForce = 8f;
 
+    [Header("Knockback")]
+    [Tooltip("Fuerza horizontal del empujón al recibir daño")]
+    [SerializeField] private float knockbackForce = 6f;
+
+    [Tooltip("Fuerza vertical del empujón al recibir daño")]
+    [SerializeField] private float knockbackUpForce = 4f;
+
+    [Tooltip("Segundos sin control horizontal tras recibir daño")]
+    [SerializeField] private float knockbackControlLock = 0.2f;
+
     [Header("Animación")]
     [Tooltip("Parámetro float del Animator que recibe la velocidad horizontal")]
-    public string moveParam = "MotMen";
+    public string moveParam    = "MotMen";
 
     [Tooltip("Trigger del Animator que activa la animación de salto")]
-    public string jumpTrigger = "Jump";
+    public string jumpTrigger  = "Jump";
 
     [Tooltip("Bool del Animator que indica que estamos en suelo")]
     public string groundedParam = "Suelo";
@@ -27,21 +38,25 @@ public class Player : Personaje, IMovable
     public float moveMultiplier = 1f;
 
     [Tooltip("Umbral mínimo de velocidad para considerar que el jugador se está moviendo")]
-    public float moveThreshold = 0.1f;
+    public float moveThreshold  = 0.1f;
 
     private Rigidbody2D rb;
-    private Animator anim;
-    private bool isGrounded;
-    private Vector3 escalaOriginal;
+    private Animator    anim;
+    private bool        isGrounded;
+    private Vector3     escalaOriginal;
 
-    // Entrada capturada en Update, aplicada en FixedUpdate
     private float moveInput;
-    private bool jumpPressed;
+    private bool  jumpPressed;
 
     /// <summary>
-    /// Velocidad capturada al INICIO de FixedUpdate, antes de que el motor físico
-    /// resuelva colisiones. StompTrigger la usa para confirmar que el player
-    /// estaba cayendo en el momento exacto del impacto.
+    /// True mientras dure el knockback: bloquea el override de velocidad X en Move()
+    /// para que el impulso no sea cancelado inmediatamente por el input del jugador.
+    /// </summary>
+    private bool isKnockedBack;
+
+    /// <summary>
+    /// Velocidad capturada al inicio de FixedUpdate, antes de que la física resuelva
+    /// colisiones. Usada por StompTrigger para confirmar que el player caía.
     /// </summary>
     public Vector2 VelocityBeforePhysics { get; private set; }
 
@@ -49,9 +64,9 @@ public class Player : Personaje, IMovable
 
     protected override void Start()
     {
-        base.Start(); // inicializa currentHealth en Personaje
-        rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
+        base.Start();
+        rb             = GetComponent<Rigidbody2D>();
+        anim           = GetComponent<Animator>();
         escalaOriginal = transform.localScale;
     }
 
@@ -59,9 +74,8 @@ public class Player : Personaje, IMovable
     {
         moveInput = Input.GetAxisRaw("Horizontal");
 
-        // Flip de sprite según dirección
         if (moveInput > 0f)
-            transform.localScale = new Vector3(Mathf.Abs(escalaOriginal.x), escalaOriginal.y, escalaOriginal.z);
+            transform.localScale = new Vector3( Mathf.Abs(escalaOriginal.x), escalaOriginal.y, escalaOriginal.z);
         else if (moveInput < 0f)
             transform.localScale = new Vector3(-Mathf.Abs(escalaOriginal.x), escalaOriginal.y, escalaOriginal.z);
 
@@ -74,31 +88,24 @@ public class Player : Personaje, IMovable
     private void FixedUpdate()
     {
         if (rb == null) return;
-
-        // ⚠️ Snapshot ANTES de Move() y ANTES de que la física resuelva colisiones.
-        // OnTriggerEnter2D dispara después del paso físico: rb.linearVelocity.y ya
-        // es 0 en ese momento. Este valor preserva la velocidad real de caída.
         VelocityBeforePhysics = rb.linearVelocity;
-
         Move();
     }
 
     // ── IMovable ─────────────────────────────────────────────
 
-    /// <summary>
-    /// Aplica el movimiento horizontal y el salto al Rigidbody.
-    /// Centraliza toda la física en un único método, respetando IMovable.
-    /// </summary>
     public void Move()
     {
-        rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
+        // Durante el knockback no sobreescribimos la velocidad X:
+        // el impulso tiene que poder expresarse sin que el input lo cancele
+        if (!isKnockedBack)
+            rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
 
         if (jumpPressed)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             jumpPressed = false;
-            isGrounded = false;
-
+            isGrounded  = false;
             anim?.SetTrigger(jumpTrigger);
             anim?.SetBool(groundedParam, false);
         }
@@ -106,10 +113,6 @@ public class Player : Personaje, IMovable
 
     // ── Stomp ────────────────────────────────────────────────
 
-    /// <summary>
-    /// Impulsa al player hacia arriba tras pisar un IStompable.
-    /// Llamado por StompTrigger. Reutiliza la animación de salto.
-    /// </summary>
     public void ApplyStompBounce()
     {
         if (rb == null) return;
@@ -119,18 +122,43 @@ public class Player : Personaje, IMovable
 
     // ── Hooks de Personaje ───────────────────────────────────
 
-    /// <summary>
-    /// Dispara la animación de daño al recibir un golpe lateral.
-    /// Trigger "Hurt" → configurar en el Animator del Player.
-    /// </summary>
     protected override void OnDamaged()
     {
         anim?.SetTrigger("Hurt");
     }
 
     /// <summary>
-    /// Destruye al jugador cuando su vida llega a 0.
+    /// Calcula la dirección del empujón (away from source) y aplica el impulso.
+    /// Bloquea el control horizontal durante knockbackControlLock segundos.
     /// </summary>
+    protected override void OnKnockback(Vector2 sourcePosition)
+    {
+        if (rb == null) return;
+
+        // Si sourcePosition es default (nadie pasó coordenadas), no aplicar knockback
+        if (sourcePosition == default) return;
+
+        // Dirección horizontal: empujar AWAY del origen del daño
+        Vector2 toPlayer = (Vector2)transform.position - sourcePosition;
+        float xDir = toPlayer.sqrMagnitude > 0.001f
+            ? Mathf.Sign(toPlayer.x)
+            : (transform.localScale.x >= 0 ? -1f : 1f); // fallback: hacia atrás
+
+        rb.linearVelocity = new Vector2(xDir * knockbackForce, knockbackUpForce);
+
+        StartCoroutine(KnockbackLock());
+    }
+
+    /// <summary>
+    /// Bloquea el override de movimiento horizontal durante knockbackControlLock segundos.
+    /// </summary>
+    private IEnumerator KnockbackLock()
+    {
+        isKnockedBack = true;
+        yield return new WaitForSeconds(knockbackControlLock);
+        isKnockedBack = false;
+    }
+
     protected override void Die()
     {
         Debug.Log("El jugador ha muerto.");
@@ -147,9 +175,9 @@ public class Player : Personaje, IMovable
             ? Mathf.Abs(rb.linearVelocity.x)
             : Mathf.Abs(moveInput * speed);
 
-        anim.SetFloat(moveParam, horVel * moveMultiplier);
+        anim.SetFloat(moveParam,    horVel * moveMultiplier);
         anim.SetFloat("YVelocity", rb != null ? rb.linearVelocity.y : 0f);
-        anim.SetBool("IsMoving", horVel > moveThreshold);
+        anim.SetBool("IsMoving",   horVel > moveThreshold);
         anim.SetBool(groundedParam, isGrounded);
     }
 

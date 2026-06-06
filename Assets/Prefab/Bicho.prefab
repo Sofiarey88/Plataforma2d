@@ -14,7 +14,8 @@ GameObject:
   - component: {fileID: 2624959900331586831}
   - component: {fileID: 4735092208537696434}
   - component: {fileID: 8671571745466561301}
-  m_Layer: 0
+  - component: {fileID: -5299439877402872992}
+  m_Layer: 6
   m_Name: Bicho
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -139,7 +140,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &4735092208537696434
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -174,7 +175,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.01516521, y: 0.013209999}
+  m_Offset: {x: -0.01665771, y: -0.026829481}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -184,7 +185,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.89693093, y: 1.0344735}
+  m_Size: {x: 0.53577447, y: 0.7214371}
   m_EdgeRadius: 0
 --- !u!114 &8671571745466561301
 MonoBehaviour:
@@ -202,3 +203,18 @@ MonoBehaviour:
   moveSpeed: 2
   damageToPlayer: 1
   patrolDistance: 3
+--- !u!114 &-5299439877402872992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7594889700253783162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57aad66319838b046973faa58c62b598, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  flashCount: 2
+  flashDuration: 0.08
