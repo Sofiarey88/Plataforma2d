@@ -1,30 +1,23 @@
+using TMPro;
 using UnityEngine;
 
-/// <summary>
-/// Gestor de puntuación sencillo (Singleton).
-/// Añade este componente a un GameObject vacío en la escena (por ejemplo "GameManager").
-/// </summary>
 public class ScoreManager : MonoBehaviour
 {
-    public static ScoreManager Instance { get; private set; }
+    public static ScoreManager Instance;
 
-    public int Score { get; private set; }
+    public TextMeshProUGUI textoPuntos;
 
-    void Awake()
+    private int score = 0;
+
+    private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        textoPuntos.text = "Choclos: 0";
     }
 
-    public void AddScore(int amount)
+    public void AddScore(int puntos)
     {
-        Score += amount;
-        Debug.Log("Score: " + Score);
-        // Aquí puedes emitir eventos o actualizar UI
+        score += puntos;
+        textoPuntos.text = "Choclos: " + score;
     }
 }
