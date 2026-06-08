@@ -3,22 +3,25 @@ using UnityEngine.SceneManagement;
 
 public class GameOverManager : MonoBehaviour
 {
-    public Player player;
+    [SerializeField] private Player player;
     public GameObject gameOverPanel;
 
-    private bool gameOverMostrado = false;
+    private void OnEnable() => player.OnHealthChanged += HandleHealthChanged;
+    private void OnDisable() => player.OnHealthChanged -= HandleHealthChanged;
 
-    void Update()
+    private void HandleHealthChanged(int actual, int maximo)
     {
-        if (!gameOverMostrado && player.CurrentHealth <= 0)
-        {
-            gameOverMostrado = true;
-            gameOverPanel.SetActive(true);
-        }
+        if (actual > 0) return;
+
+        gameOverPanel.SetActive(true);
+        // Se desuscribe para que no se llame de nuevo si TakeDamage
+        // se invoca sobre un personaje ya muerto
+        player.OnHealthChanged -= HandleHealthChanged;
     }
 
     public void Reiniciar()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+
 }

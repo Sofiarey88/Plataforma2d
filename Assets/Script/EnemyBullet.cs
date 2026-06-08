@@ -1,9 +1,8 @@
 using UnityEngine;
 
-/// <summary>
-/// Proyectil físico disparado por EnemyShooter.
-/// Pasa su posición como sourcePosition para activar el knockback del Player.
-/// </summary>
+// Proyectil físico disparado por EnemyShooter.
+// Pasa su posición como sourcePosition para activar el knockback del Player.
+
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
 public class EnemyBullet : Projectile

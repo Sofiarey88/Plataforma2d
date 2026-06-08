@@ -1,9 +1,9 @@
 using UnityEngine;
 
-/// <summary>
-/// Power-up de Bullet Time: ralentiza todo el mundo excepto al jugador.
-/// El jugador compensa el timeScale internamente en Player para moverse con normalidad.
-/// </summary>
+
+// Power-up de Bullet Time: ralentiza todo el mundo excepto al jugador.
+// El jugador compensa el timeScale internamente en Player para moverse con normalidad.
+
 public class BulletTimePowerUp : PowerUp
 {
     [Header("Bullet Time")]

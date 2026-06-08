@@ -1,11 +1,9 @@
 using UnityEngine;
 
-/// <summary>
-/// Plataforma de lanzamiento vertical.
-/// Cuando alcanza su punto más alto y comienza a bajar, aplica un impulso
-/// ascendente al jugador. Al aterrizar de nuevo, cancela la velocidad de caída
-/// para evitar rebotes.
-/// </summary>
+// Plataforma de lanzamiento vertical.
+// Cuando alcanza su punto más alto y comienza a bajar, aplica un impulso
+// ascendente al jugador. Al aterrizar de nuevo, cancela la velocidad de caída
+// para evitar rebotes.
 public class PlataformaLanzamiento : EscenarioMovil
 {
     [Header("Lanzamiento")]
@@ -80,12 +78,10 @@ public class PlataformaLanzamiento : EscenarioMovil
 
         foreach (ContactPoint2D contact in collision.contacts)
         {
-            // Normal apunta hacia arriba (+Y): el jugador aterrizó encima de la plataforma
             if (contact.normal.y > 0.5f)
             {
                 playerRb = collision.gameObject.GetComponent<Rigidbody2D>();
 
-                // Cancelar velocidad vertical elimina el rebote al aterrizar
                 if (playerRb != null)
                     playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, 0f);
 

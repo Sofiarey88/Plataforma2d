@@ -4,9 +4,7 @@ using UnityEngine;
 public class ScoreManager : MonoBehaviour
 {
     public static ScoreManager Instance;
-
     public TextMeshProUGUI textoPuntos;
-
     private int score = 0;
 
     private void Awake()
@@ -14,6 +12,9 @@ public class ScoreManager : MonoBehaviour
         Instance = this;
         textoPuntos.text = "Choclos: 0";
     }
+
+    private void OnEnable() => ScoreEvents.OnPuntosRecolectados += AddScore;
+    private void OnDisable() => ScoreEvents.OnPuntosRecolectados -= AddScore;
 
     public void AddScore(int puntos)
     {

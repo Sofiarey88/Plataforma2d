@@ -1,9 +1,7 @@
 using UnityEngine;
 
-/// <summary>
 /// Plataforma móvil con desplazamiento horizontal.
 /// Siempre inicia el movimiento desde la posición exacta donde fue colocada en escena.
-/// </summary>
 public class PlataformaMovilHorizontal : EscenarioMovil
 {
     void Update()
@@ -22,7 +20,6 @@ public class PlataformaMovilHorizontal : EscenarioMovil
     public override void Move()
     {
         if (distance <= 0f) return;
-        // Se suma 'distance' como desfase para que offset=0 al inicio (time=0)
         float offset = Mathf.PingPong(Time.time * speed + distance, distance * 2f) - distance;
         Vector3 pos = startPos + Vector3.right * offset;
 

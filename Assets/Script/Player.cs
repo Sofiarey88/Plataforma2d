@@ -1,10 +1,8 @@
 using System.Collections;
 using UnityEngine;
 
-/// <summary>
 /// Controla al jugador: movimiento, salto, animaciones, knockback e invencibilidad.
 /// Hereda vida e IDamageable de Personaje. Implementa IMovable.
-/// </summary>
 public class Player : Personaje, IMovable
 {
     [Header("Movimiento")]
@@ -98,8 +96,6 @@ public class Player : Personaje, IMovable
     {
         float compensatedSpeed = bulletTimeActive ? speed / Time.timeScale : speed;
 
-        // Compensación correcta: iguala la altura de salto teniendo en cuenta
-        // que gravityScale ya fue aumentado. sqrt mantiene h = v²/(2g) constante.
         float compensatedJumpForce = bulletTimeActive
             ? jumpForce * Mathf.Sqrt(rb.gravityScale / originalGravityScale)
             : jumpForce;
@@ -221,14 +217,11 @@ public class Player : Personaje, IMovable
         Time.fixedDeltaTime  = 0.02f * slowFactor;
         bulletTimeActive     = true;
 
-        // (1 / timeScale) compensa la pérdida de gravedad real causada por el timeScale reducido.
-        // bulletTimeGravityMultiplier añade peso extra encima de esa compensación.
         if (rb != null)
             rb.gravityScale = originalGravityScale * (1f / slowFactor) * bulletTimeGravityMultiplier;
 
         yield return new WaitForSecondsRealtime(duration);
 
-        // Restaurar todo al terminar
         Time.timeScale      = 1f;
         Time.fixedDeltaTime = 0.02f;
         bulletTimeActive    = false;

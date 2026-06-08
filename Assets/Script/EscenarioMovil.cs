@@ -1,9 +1,7 @@
 using UnityEngine;
 
-/// <summary>
-/// Clase base abstracta para objetos del escenario con movimiento.
-/// Implementa IMovable: las subclases definen Move().
-/// </summary>
+// Clase base abstracta para objetos del escenario con movimiento.
+// Implementa IMovable: las subclases definen Move().
 public abstract class EscenarioMovil : MonoBehaviour, IMovable
 {
     [Header("Movimiento común")]
@@ -42,6 +40,5 @@ public abstract class EscenarioMovil : MonoBehaviour, IMovable
         }
     }
 
-    // --- IMovable ---
     public abstract void Move();
 }

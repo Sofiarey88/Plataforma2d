@@ -1,9 +1,7 @@
 using UnityEngine;
 
-/// <summary>
 /// Plataforma móvil vertical. Cuando desciende, transfiere la velocidad de bajada
 /// al jugador solo en el eje Y, sin restringir su movimiento horizontal.
-/// </summary>
 public class PlataformaMovilVertical : EscenarioMovil
 {
     private float previousOffset = 0f;
@@ -49,15 +47,12 @@ public class PlataformaMovilVertical : EscenarioMovil
         PushPlayerDown(delta);
     }
 
-    /// <summary>
     /// Cuando la plataforma baja, impone la velocidad de descenso en Y al jugador
     /// sin tocar su velocidad horizontal.
-    /// </summary>
     private void PushPlayerDown(float delta)
     {
         if (delta >= 0f || playerRb == null) return;
 
-        // Velocidad de descenso de la plataforma en este frame
         float platformVelocityY = delta / Time.fixedDeltaTime;
 
         // Solo sobreescribimos Y si el jugador va más rápido que la plataforma (hacia arriba)

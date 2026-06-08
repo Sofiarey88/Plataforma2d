@@ -1,11 +1,9 @@
 using UnityEngine;
 
-/// <summary>
-/// Clase base abstracta para todos los power-ups.
-/// Implementa ICollectible (recogible por trigger) e IMovable (movimiento en figura de ocho).
-/// Las subclases definen el efecto concreto en ApplyEffect().
-/// Requiere un Collider2D con Is Trigger = true en el GameObject.
-/// </summary>
+// Clase base abstracta para todos los power-ups.
+// Implementa ICollectible (recogible por trigger) e IMovable (movimiento en figura de ocho).
+// Las subclases definen el efecto concreto en ApplyEffect().
+// Requiere un Collider2D con Is Trigger = true en el GameObject.
 public abstract class PowerUp : MonoBehaviour, ICollectible, IMovable
 {
     [Header("Collectible")]
@@ -36,11 +34,9 @@ public abstract class PowerUp : MonoBehaviour, ICollectible, IMovable
     }
 
     // --- IMovable ---
-    /// <summary>
     /// Curva de Lissajous: x = A·sin(t) / y = B·sin(2t) → dibuja un ocho.
     /// Usa tiempo no escalado para que el movimiento visual sea fluido
     /// incluso si el timeScale del mundo está modificado (ej: bullet time activo).
-    /// </summary>
     public void Move()
     {
         float t = Time.unscaledTime * moveSpeed;
@@ -52,16 +48,14 @@ public abstract class PowerUp : MonoBehaviour, ICollectible, IMovable
     // --- ICollectible ---
     public void Collect(GameObject collector)
     {
-        if (value > 0)
-            ScoreManager.Instance?.AddScore(value);
+        if (value > 0) ScoreEvents.Notificar(value); 
 
         ApplyEffect(collector);
         Destroy(gameObject);
     }
 
-    /// <summary>
+
     /// Efecto concreto del power-up. Obligatorio implementar en subclases.
-    /// </summary>
     protected abstract void ApplyEffect(GameObject collector);
 
     private void OnTriggerEnter2D(Collider2D other)

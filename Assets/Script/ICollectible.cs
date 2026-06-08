@@ -1,8 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Interfaz para objetos que el jugador puede recolectar.
-/// </summary>
+// Interfaz para objetos que el jugador puede recolectar.
 public interface ICollectible
 {
     int Value { get; }

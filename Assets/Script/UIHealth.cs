@@ -2,18 +2,23 @@ using UnityEngine;
 
 public class UIHealth : MonoBehaviour
 {
-    public Player player;
+    [SerializeField] private Player player;
 
     public GameObject vida1;
     public GameObject vida2;
     public GameObject vida3;
 
-    void Update()
-    {
-        int vida = player.CurrentHealth;
+    private void OnEnable() => player.OnHealthChanged += Actualizar;
+    private void OnDisable() => player.OnHealthChanged -= Actualizar;
 
-        vida1.SetActive(vida >= 1);
-        vida2.SetActive(vida >= 2);
-        vida3.SetActive(vida >= 3);
+    // Inicializa la UI con el estado actual sin esperar al primer daño
+    private void Start() => Actualizar(player.CurrentHealth, player.MaxHealth);
+
+    private void Actualizar(int actual, int maximo)
+    {
+        vida1.SetActive(actual >= 1);
+        vida2.SetActive(actual >= 2);
+        vida3.SetActive(actual >= 3);
     }
+
 }

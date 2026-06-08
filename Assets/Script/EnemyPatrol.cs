@@ -1,9 +1,8 @@
 using UnityEngine;
 
-/// <summary>
-/// Enemigo que patrulla entre dos puntos horizontales.
-/// </summary>
-public class EnemyPatrol : Enemy
+// Único heredero de Enemy que SE mueve, por eso es el único
+// que firma el contrato IMovable.
+public class EnemyPatrol : Enemy, IMovable
 {
     [Header("Patrulla")]
     public float patrolDistance = 3f;
@@ -12,7 +11,7 @@ public class EnemyPatrol : Enemy
     private bool originSet = false;
     private int direction = 1;
 
-    public override void Move()
+    public void Move()
     {
         if (!originSet)
         {
@@ -35,4 +34,6 @@ public class EnemyPatrol : Enemy
             Flip();
         }
     }
+
+    private void FixedUpdate() => Move();
 }

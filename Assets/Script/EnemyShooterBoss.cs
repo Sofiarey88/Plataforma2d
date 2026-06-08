@@ -1,18 +1,7 @@
 using UnityEngine;
 
-/// <summary>
-/// Enemigo estático que dispara proyectiles y requiere dos pisotones para morir.
-/// Hermano de EnemyShooter: ambos son hijos directos de Enemy.
-///
-/// Diferencia con EnemyShooter:
-///   Sobreescribe OnCollisionEnter2D para ignorar el contacto cuando
-///   el player viene desde arriba, evitando que el player reciba daño
-///   al pisarlo (ese contacto ya lo gestiona StompTrigger → OnStomp).
-///
-/// Setup en Inspector:
-///   Personaje → Max Health   = 2
-///   Enemy     → Stomp Damage = 1
-/// </summary>
+// Enemigo estático boss. No implementa IMovable porque no se mueve.
+// Requiere dos pisotones para morir 
 public class EnemyShooterBoss : Enemy
 {
     [Header("Disparo")]
@@ -24,8 +13,6 @@ public class EnemyShooterBoss : Enemy
     public GameObject victoryPanel;
 
     private float nextFireTime;
-
-    public override void Move() { }
 
     private void Update()
     {
@@ -47,13 +34,6 @@ public class EnemyShooterBoss : Enemy
         Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
     }
 
-    /// <summary>
-    /// Ignora el contacto cuando proviene desde arriba (pisotón).
-    /// La normal en el callback del Enemy apunta del Player hacia el Boss;
-    /// si y menor a -0.5f el Player está cayendo encima → StompTrigger ya
-    /// gestionó ese evento, no debe aplicarse daño ni knockback al player.
-    /// Contacto lateral o inferior → comportamiento idéntico al Enemy base.
-    /// </summary>
     protected override void OnCollisionEnter2D(Collision2D collision)
     {
         if (!collision.gameObject.CompareTag("Player")) return;
@@ -69,9 +49,7 @@ public class EnemyShooterBoss : Enemy
     protected override void Die()
     {
         if (victoryPanel != null)
-        {
             victoryPanel.SetActive(true);
-        }
 
         Destroy(gameObject);
     }

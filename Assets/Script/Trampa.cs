@@ -1,9 +1,7 @@
 using UnityEngine;
 
-/// <summary>
 /// Hazard del escenario. Al contacto con el jugador, aplica daño letal.
 /// Implementa IInteractable: la lógica de interacción está desacoplada del trigger.
-/// </summary>
 public class Trampa : MonoBehaviour, IInteractable
 {
     [Tooltip("Daño que aplica la trampa al contacto (por defecto letal: iguala maxHealth)")]
