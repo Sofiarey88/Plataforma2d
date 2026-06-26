@@ -2711,52 +2711,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3ad76bf0e8a42cd4ca368aa54ebff4c7, type: 3}
---- !u!1 &510836589
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 510836591}
-  - component: {fileID: 510836592}
-  m_Layer: 0
-  m_Name: BossVictory
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &510836591
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 510836589}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.35035, y: 1.98763, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &510836592
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 510836589}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bb614e786934624a950e79d12834ee0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VictoryHandler
-  nivelFinal: Nivel1
-  victoryManager: {fileID: 1336610965}
 --- !u!1 &515789750
 GameObject:
   m_ObjectHideFlags: 0
@@ -30623,6 +30577,67 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1001 &6528568223734582328
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 944788495994478801, guid: 16751204e782b4342bba6472acc26932, type: 3}
+      propertyPath: m_Name
+      value: BossVictory
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891439718818518954, guid: 16751204e782b4342bba6472acc26932, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.35035
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891439718818518954, guid: 16751204e782b4342bba6472acc26932, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.98763
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891439718818518954, guid: 16751204e782b4342bba6472acc26932, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891439718818518954, guid: 16751204e782b4342bba6472acc26932, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891439718818518954, guid: 16751204e782b4342bba6472acc26932, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891439718818518954, guid: 16751204e782b4342bba6472acc26932, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891439718818518954, guid: 16751204e782b4342bba6472acc26932, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891439718818518954, guid: 16751204e782b4342bba6472acc26932, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891439718818518954, guid: 16751204e782b4342bba6472acc26932, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891439718818518954, guid: 16751204e782b4342bba6472acc26932, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4095469877300576516, guid: 16751204e782b4342bba6472acc26932, type: 3}
+      propertyPath: victoryManager
+      value: 
+      objectReference: {fileID: 1336610965}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 16751204e782b4342bba6472acc26932, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -30656,4 +30671,4 @@ SceneRoots:
   - {fileID: 294803493}
   - {fileID: 1641418151}
   - {fileID: 1712165152}
-  - {fileID: 510836591}
+  - {fileID: 6528568223734582328}
