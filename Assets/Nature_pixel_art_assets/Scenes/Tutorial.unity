@@ -2763,6 +2763,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mapa1
       objectReference: {fileID: 0}
+    - target: {fileID: 1312438662530423558, guid: 61f166448e1552c48a6459a44a72bc0c, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
     - target: {fileID: 3245554601334677643, guid: 61f166448e1552c48a6459a44a72bc0c, type: 3}
       propertyPath: m_Points.Array.size
       value: 30
@@ -2807,6 +2811,10 @@ PrefabInstance:
       propertyPath: m_Points.Array.data[29].y
       value: 1.0016413
       objectReference: {fileID: 0}
+    - target: {fileID: 7416029594972331340, guid: 61f166448e1552c48a6459a44a72bc0c, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7877955689967922872, guid: 61f166448e1552c48a6459a44a72bc0c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2846,6 +2854,14 @@ PrefabInstance:
     - target: {fileID: 7877955689967922872, guid: 61f166448e1552c48a6459a44a72bc0c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8659292424330605233, guid: 61f166448e1552c48a6459a44a72bc0c, type: 3}
+      propertyPath: m_TagString
+      value: Trampa
+      objectReference: {fileID: 0}
+    - target: {fileID: 9171034589311703933, guid: 61f166448e1552c48a6459a44a72bc0c, type: 3}
+      propertyPath: m_TagString
+      value: Trampa
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6821495388819916825, guid: 61f166448e1552c48a6459a44a72bc0c, type: 3}

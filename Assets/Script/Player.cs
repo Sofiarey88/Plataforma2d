@@ -231,5 +231,15 @@ public class Player : Personaje, IMovable
 
         bulletTimeCoroutine = null;
     }
+
+    private void OnDisable()
+    {
+        if (bulletTimeActive)
+        {
+            Time.timeScale      = 1f;
+            Time.fixedDeltaTime = 0.02f;
+            bulletTimeActive    = false;
+        }
+    }
 }
 

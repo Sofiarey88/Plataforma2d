@@ -22,9 +22,13 @@ public abstract class Personaje : MonoBehaviour, IDamageable
 
     protected bool isInvincible;
 
-    protected virtual void Start()
+    protected virtual void Awake()
     {
         currentHealth = maxHealth;
+    }
+
+    protected virtual void Start()
+    {
         damageFlash   = GetComponentInChildren<DamageFlash>(includeInactive: true);
 
         if (damageFlash == null)

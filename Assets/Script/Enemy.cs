@@ -16,6 +16,7 @@ public abstract class Enemy : Personaje, IStompable
 
     protected virtual void Awake()
     {
+        base.Awake();
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
     }
