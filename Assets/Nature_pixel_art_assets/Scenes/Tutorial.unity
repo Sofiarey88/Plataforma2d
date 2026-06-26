@@ -316,6 +316,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bicho (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 7594889700253783162, guid: 0c4d0629512e19447b1a9cd25a74e63e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8671571745466561301, guid: 0c4d0629512e19447b1a9cd25a74e63e, type: 3}
       propertyPath: maxHealth
       value: 1
@@ -437,11 +441,46 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dragon
       objectReference: {fileID: 0}
+    - target: {fileID: 8009445893397405600, guid: 6cdf9ad59c4808d458a8e29af0ce6af7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6cdf9ad59c4808d458a8e29af0ce6af7, type: 3}
+--- !u!1 &198734264
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 198734265}
+  m_Layer: 0
+  m_Name: Scena
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &198734265
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198734264}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &350905755 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 408476552466415622, guid: 8ea4caa5a637244408a5d6f163ee6652, type: 3}
@@ -2104,3 +2143,4 @@ SceneRoots:
   - {fileID: 7734082176920433930}
   - {fileID: 6400737064650596222}
   - {fileID: 848721202}
+  - {fileID: 198734265}

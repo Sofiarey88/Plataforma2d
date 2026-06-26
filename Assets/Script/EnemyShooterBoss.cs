@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement; // Puedes quitar esto si ya no lo usas
 
 // Enemigo estático boss. No implementa IMovable porque no se mueve.
 // Requiere dos pisotones para morir 
@@ -11,6 +12,9 @@ public class EnemyShooterBoss : Enemy
 
     [Header("Victoria")]
     public GameObject victoryPanel;
+
+    [Header("Managers")]
+    public BossDeathManager bossDeathManager; // Referencia al manager
 
     private float nextFireTime;
 
@@ -48,8 +52,9 @@ public class EnemyShooterBoss : Enemy
 
     protected override void Die()
     {
-        if (victoryPanel != null)
-            victoryPanel.SetActive(true);
+        // Llama al manager externo para cambiar de escena
+        if (bossDeathManager != null)
+            bossDeathManager.OnBossDeath();
 
         Destroy(gameObject);
     }
