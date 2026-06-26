@@ -459,6 +459,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 198734265}
+  - component: {fileID: 198734266}
   m_Layer: 0
   m_Name: Scena
   m_TagString: Untagged
@@ -481,6 +482,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &198734266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198734264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f824527893abe774c83b4d94fda31db0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossDeathManager
 --- !u!4 &350905755 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 408476552466415622, guid: 8ea4caa5a637244408a5d6f163ee6652, type: 3}
@@ -2067,15 +2080,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6200203089643262661, guid: 1e629a2ea44195b4cadb77fe0e72a04d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 22.287
+      value: 22.14
       objectReference: {fileID: 0}
     - target: {fileID: 6200203089643262661, guid: 1e629a2ea44195b4cadb77fe0e72a04d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.866
+      value: 0.73
       objectReference: {fileID: 0}
     - target: {fileID: 6200203089643262661, guid: 1e629a2ea44195b4cadb77fe0e72a04d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.242
+      value: 10.34
       objectReference: {fileID: 0}
     - target: {fileID: 6200203089643262661, guid: 1e629a2ea44195b4cadb77fe0e72a04d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2113,6 +2126,10 @@ PrefabInstance:
       propertyPath: victoryPanel
       value: 
       objectReference: {fileID: 2027399916}
+    - target: {fileID: 6839252304778730177, guid: 1e629a2ea44195b4cadb77fe0e72a04d, type: 3}
+      propertyPath: bossDeathManager
+      value: 
+      objectReference: {fileID: 198734266}
     - target: {fileID: 7648883321455801327, guid: 1e629a2ea44195b4cadb77fe0e72a04d, type: 3}
       propertyPath: maxHealth
       value: 2

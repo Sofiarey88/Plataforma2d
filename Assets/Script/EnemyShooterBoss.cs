@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // Puedes quitar esto si ya no lo usas
+using UnityEngine.SceneManagement;
 
-// Enemigo estático boss. No implementa IMovable porque no se mueve.
-// Requiere dos pisotones para morir 
 public class EnemyShooterBoss : Enemy
 {
     [Header("Disparo")]
@@ -14,7 +12,8 @@ public class EnemyShooterBoss : Enemy
     public GameObject victoryPanel;
 
     [Header("Managers")]
-    public BossDeathManager bossDeathManager; // Referencia al manager
+    public BossDeathManager bossDeathManager;
+    public VictoryManager victoryManager; // <-- Agrega esta referencia si no la tienes
 
     private float nextFireTime;
 
@@ -52,9 +51,13 @@ public class EnemyShooterBoss : Enemy
 
     protected override void Die()
     {
-        // Llama al manager externo para cambiar de escena
+        // Mantén tu lógica actual
         if (bossDeathManager != null)
             bossDeathManager.OnBossDeath();
+
+        // SOLO muestra el panel si estás en el nivel final
+        if (SceneManager.GetActiveScene().name == "Nivel1" && victoryManager != null)
+            victoryManager.MostrarVictoria();
 
         Destroy(gameObject);
     }
