@@ -1,9 +1,9 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class VictoryHandler : MonoBehaviour
 {
-    [Header("Configuración")]
+    [Header("Configuracion")]
     public string nivelFinal = "Nivel1";
     public VictoryManager victoryManager; // Asigna si quieres mostrar el panel de victoria
 
@@ -21,4 +21,4 @@ public class VictoryHandler : MonoBehaviour
             SceneManager.LoadScene(nivelFinal);
         }
     }
-}       
+}
