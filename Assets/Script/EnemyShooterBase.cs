@@ -6,6 +6,8 @@ public abstract class EnemyShooterBase : Enemy
     [SerializeField] protected GameObject bulletPrefab;
     [SerializeField] protected Transform firePoint;
     [SerializeField] protected float fireRate = 1f;
+    [Tooltip("Si se activa, la bala instanciada heredara el valor de damageToPlayer de este enemigo.")]
+    [SerializeField] protected bool inheritDamageToBullet = true;
 
     private float nextFireTime;
 
@@ -21,7 +23,11 @@ public abstract class EnemyShooterBase : Enemy
     protected virtual void Shoot()
     {
         if (!CanShoot()) return;
-        Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        GameObject bulletObj = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        if (inheritDamageToBullet && bulletObj.TryGetComponent<Projectile>(out var bullet))
+        {
+            bullet.SetDamage(damageToPlayer);
+        }
     }
 
     protected bool CanShoot()

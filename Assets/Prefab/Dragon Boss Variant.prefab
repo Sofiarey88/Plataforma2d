@@ -128,7 +128,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 2
   moveSpeed: 2
-  damageToPlayer: 1
+  damageToPlayer: 2
   stompDamage: 1
   stompHitTrigger: Hurt
   bulletPrefab: {fileID: 6627251467851497909, guid: 52b04499264be714c8d204de721b3749, type: 3}

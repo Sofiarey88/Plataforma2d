@@ -8,6 +8,17 @@ public abstract class Projectile : MonoBehaviour, IStompable
     [Header("Proyectil")]
     [SerializeField] protected int damage = 1;
 
+    public int Damage
+    {
+        get => damage;
+        set => damage = value;
+    }
+
+    public void SetDamage(int newDamage)
+    {
+        damage = newDamage;
+    }
+
     // --- IStompable ---
     // Destruye el proyectil al ser pisoteado.
     public virtual void OnStomp()

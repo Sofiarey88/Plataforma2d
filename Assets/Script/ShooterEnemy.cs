@@ -7,6 +7,8 @@ public abstract class ShooterEnemy : Enemy
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float fireRate = 1f;
+    [Tooltip("Si se activa, la bala instanciada heredara el valor de damageToPlayer de este enemigo.")]
+    public bool inheritDamageToBullet = true;
 
     private float nextFireTime;
 
@@ -27,7 +29,11 @@ public abstract class ShooterEnemy : Enemy
             return;
         }
 
-        Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        GameObject bulletObj = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        if (inheritDamageToBullet && bulletObj.TryGetComponent<Projectile>(out var bullet))
+        {
+            bullet.SetDamage(damageToPlayer);
+        }
     }
 
     protected virtual void OnDrawGizmosSelected()
